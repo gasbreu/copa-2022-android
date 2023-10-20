@@ -1,6 +1,9 @@
 package me.dio.copa.catar.features
 
+import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,8 +33,8 @@ class MainActivity : ComponentActivity() {
     private fun observeActions() {
         viewModel.action.observe(this) { action ->
             when (action) {
-                is MainUiAction.MatchesNotFound -> TODO()
-                MainUiAction.Unexpected -> TODO()
+                is MainUiAction.MatchesNotFound -> handleMatchesNotFound()
+                MainUiAction.Unexpected -> handleUnexpectedAction()
                 is MainUiAction.DisableNotification ->
                     NotificationMatcherWorker.cancel(applicationContext, action.match)
                 is MainUiAction.EnableNotification ->
@@ -40,5 +43,27 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun handleUnexpectedAction() {
+        Log.e("MainActivity", "Ação inesperada!")
+        showMessage("Ação inesperada!")
+
+    }
+
+    private fun handleMatchesNotFound() {
+        val alertDialog = AlertDialog.Builder(this)
+            .setTitle("Nenhuma correspondência encontrada")
+            .setMessage("Não foi possível encontrar nenhuma correspondência.")
+            .setPositiveButton("OK") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+        alertDialog.show()
+
+    }
+
+    private fun showMessage(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+
+    }
 
 }
